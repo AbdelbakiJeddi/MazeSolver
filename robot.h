@@ -21,7 +21,12 @@
 extern int TICKS_PER_CELL;
 extern int BASE_SPEED;
 extern float KP_STRAIGHT;
-extern int TICKS_PER_90DEG_TURN;  // Ticks for 90 degree turn
+extern int TICKS_PER_90DEG_TURN;
+
+// PID TURN GAINS
+extern float KP_TURN;
+extern float KD_TURN;
+extern float KI_TURN;
 
 // FUNCTIONS
 void robotInit();
@@ -42,5 +47,33 @@ long getLeftTicks();
 long getRightTicks();
 void printEncoderStatus();
 
-void setKp(float kp);
+void turnLeft90PID();
+void turnRight90PID();
+
+void setKpTurn(float kp);
+void setKdTurn(float kd);
+void setKiTurn(float ki);
+void setTicksPer90(int ticks);
+void setBaseSpeed(int speed);
+void setKpStraight(float kp);
+void printParams();
+
+// Direction constants
+#define DIR_NORTH 0
+#define DIR_EAST  1
+#define DIR_SOUTH 2
+#define DIR_WEST  3
+
+// Movement functions
+void moveOneCell(int targetDirection);
+
+// Sensor functions (to be implemented)
+bool hasWallLeft();
+bool hasWallRight();
+bool hasWallFront();
+
+// Floodfill functions (to be implemented)
+int getCurrentDirection();
+int getNextDirection();
+
 #endif // ROBOT_H

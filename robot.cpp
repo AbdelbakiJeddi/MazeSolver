@@ -1,17 +1,11 @@
 #include "Arduino.h"
 #include "robot.h"
 
-// ============================================================================
-// CALIBRATION VARIABLES
-// ============================================================================
 int TICKS_PER_CELL = 1000;
 int BASE_SPEED = 120;
 float KP_STRAIGHT = 3.0;
 int TICKS_PER_90DEG_TURN = 80;  // Calibrate this!
 
-// ============================================================================
-// PRIVATE VARIABLES
-// ============================================================================
 
 // Encoder tick counts (volatile for ISR access)
 volatile long leftTicks = 0;
@@ -53,10 +47,6 @@ void resetEncoders() {
     interrupts();
 }
 
-
-// ============================================================================
-// MOTOR CONTROL (2-PIN H-BRIDGE)
-// ============================================================================
 
 void motorLeft(int speed) {
     speed = constrain(speed, -MAX_SPEED, MAX_SPEED);
@@ -139,10 +129,6 @@ void rightEncoderISR() {
 }
 
 
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
 long getLeftTicks() {
     noInterrupts();
     long ticks = leftTicks;
@@ -166,11 +152,6 @@ void printEncoderStatus() {
     Serial.println(error);
 }
 
-void setTargetGain(float kp) {
-    // This function can be used to update the KP_STRAIGHT gain at runtime if needed.
-    // However, since KP_STRAIGHT is defined as a macro, we would need to change it to a variable to allow this.
-    // For now, this is just a placeholder to show where you would implement dynamic gain adjustment.
-}
 
 // ============================================================================
 // TURN FUNCTIONS
@@ -186,4 +167,66 @@ void turnRight(int speed) {
     // Left motor forward, right motor backward = turn right
     motorLeft(speed);
     motorRight(-speed);
+}
+
+// ============================================================================
+// PID TURN FUNCTIONS
+// ============================================================================
+
+float KP_TURN = 0.5;
+float KD_TURN = 0.3;
+float KI_TURN = 2.0;
+
+void turnLeft90PID() {
+    resetEncoders();
+    int lastError = 0;
+    float integral = 0;
+    
+    while (true) {
+        int currentDiff = getRightTicks() - getLeftTicks();
+        int error = TICKS_PER_90DEG_TURN - currentDiff;
+        
+        if (error <= 0) break;
+        
+        integral += error;
+        int derivative = error - lastError;
+        float pidOutput = (KP_TURN * error) + (KI_TURN * integral) + (KD_TURN * derivative);
+        lastError = error;
+        
+        int speed = constrain((int)pidOutput, 60, 100);
+        
+        motorLeft(-speed);
+        motorRight(speed);
+        
+        delay(5);
+    }
+    printEncoderStatus();
+    motorStop();
+}
+
+void turnRight90PID() {
+    resetEncoders();
+    int lastError = 0;
+    float integral = 0;
+    
+    while (true) {
+        int currentDiff = getLeftTicks() - getRightTicks();
+        int error = TICKS_PER_90DEG_TURN - currentDiff;
+        
+        if (error <= 0) break;
+        
+        integral += error;
+        int derivative = error - lastError;
+        float pidOutput = (KP_TURN * error) + (KI_TURN * integral) + (KD_TURN * derivative);
+        lastError = error;
+        
+        int speed = constrain((int)pidOutput, 60, 100);
+        
+        motorLeft(speed);
+        motorRight(-speed);
+        
+        delay(5);
+    }
+    printEncoderStatus();
+    motorStop();
 }
