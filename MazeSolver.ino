@@ -22,27 +22,7 @@ void setup() {
 }
 
 void loop() {
-    // if (Serial.available() > 0) {
-    //     char cmd = Serial.read();
-        
-    //     if (cmd == 'l') {
-    //         Serial.println("Turning left...");
-    //         turnLeft90PID();
-    //         Serial.println("Done");
-    //     }
-    //     else if (cmd == 'r') {
-    //         Serial.println("Turning right...");
-    //         turnRight90PID();
-    //         Serial.println("Done");
-    //     }
-    //     else if (cmd == 'e') {
-    //         printEncoderStatus();
-    //     }
-    //     else if (cmd == 'x') {
-    //         resetEncoders();
-    //         Serial.println("Reset");
-    //     }
-    // }
+    
     turnLeft90PID();
     delay(1000);
 }
