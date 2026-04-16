@@ -5,7 +5,7 @@
 // CALIBRATION VARIABLES
 // ============================================================================
 int TICKS_PER_CELL = 1000;
-int BASE_SPEED = 120;
+int BASE_SPEED = 100;
 float KP_STRAIGHT = 3.0;
 int TICKS_PER_90DEG_TURN = 80;  // Calibrate this!
 
@@ -166,12 +166,6 @@ void printEncoderStatus() {
     Serial.println(error);
 }
 
-void setTargetGain(float kp) {
-    // This function can be used to update the KP_STRAIGHT gain at runtime if needed.
-    // However, since KP_STRAIGHT is defined as a macro, we would need to change it to a variable to allow this.
-    // For now, this is just a placeholder to show where you would implement dynamic gain adjustment.
-}
-
 // ============================================================================
 // TURN FUNCTIONS
 // ============================================================================
@@ -186,4 +180,93 @@ void turnRight(int speed) {
     // Left motor forward, right motor backward = turn right
     motorLeft(speed);
     motorRight(-speed);
+}
+
+float KP_TURN = 0.5;
+float KD_TURN = 0.3;
+float KI_TURN = 2.0;
+
+void turnLeft90PID() {
+    resetEncoders();
+    int lastError = 0;
+    
+    while (true) {
+        int currentDiff = getRightTicks() - getLeftTicks();
+        int error = TICKS_PER_90DEG_TURN - currentDiff;
+        
+        if (error <= 0) break;
+        
+        int derivative = error - lastError;
+        float pidOutput = (KP_TURN * error) + (KD_TURN * derivative);
+        lastError = error;
+        
+        int speed = constrain((int)pidOutput, 60, 100);
+        
+        motorLeft(-speed);
+        motorRight(speed);
+        
+        delay(5);
+    }
+    printEncoderStatus();
+    motorStop();
+}
+
+void turnRight90PID() {
+    resetEncoders();
+    int lastError = 0;
+    
+    while (true) {
+        int currentDiff = getLeftTicks() - getRightTicks();
+        int error = TICKS_PER_90DEG_TURN - currentDiff;
+        
+        if (error <= 0) break;
+        
+        int derivative = error - lastError;
+        float pidOutput = (KP_TURN * error) + (KD_TURN * derivative);
+        lastError = error;
+        
+        int speed = constrain((int)pidOutput, 60, 100);
+        
+        motorLeft(speed);
+        motorRight(-speed);
+        
+        delay(5);
+    }
+    printEncoderStatus();
+    motorStop();
+}
+
+void setKpTurn(float kp) {
+    KP_TURN = kp;
+}
+
+void setKdTurn(float kd) {
+    KD_TURN = kd;
+}
+
+void setKiTurn(float ki) {
+    KI_TURN = ki;
+}
+
+void setTicksPer90(int ticks) {
+    TICKS_PER_90DEG_TURN = ticks;
+}
+
+void setBaseSpeed(int speed) {
+    BASE_SPEED = speed;
+}
+
+void setKpStraight(float kp) {
+    KP_STRAIGHT = kp;
+}
+
+void printParams() {
+    Serial.println("=== Tuning Parameters ===");
+    Serial.print("KP_TURN: "); Serial.println(KP_TURN);
+    Serial.print("KD_TURN: "); Serial.println(KD_TURN);
+    Serial.print("KI_TURN: "); Serial.println(KI_TURN);
+    Serial.print("TICKS_PER_90DEG: "); Serial.println(TICKS_PER_90DEG_TURN);
+    Serial.print("BASE_SPEED: "); Serial.println(BASE_SPEED);
+    Serial.print("KP_STRAIGHT: "); Serial.println(KP_STRAIGHT);
+    Serial.println("=========================");
 }
