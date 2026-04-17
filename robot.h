@@ -38,6 +38,11 @@ extern float KP_TURN;
 extern float KD_TURN;
 extern float KI_TURN;
 
+// PID WALL CENTERING GAINS
+extern float KP_CENTER;
+extern float KD_CENTER;
+extern float KI_CENTER;
+
 // FUNCTIONS
 void robotInit();
 void resetEncoders();
@@ -47,6 +52,7 @@ void motorRight(int speed);
 void motorStop();
 
 void driveStraight(int baseSpeed);
+void driveCentered(int baseSpeed);
 void turnLeft(int speed);
 void turnRight(int speed);
 
