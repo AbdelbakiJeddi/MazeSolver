@@ -32,6 +32,14 @@ void robotInit() {
     pinMode(ENC_RIGHT_A, INPUT);
     pinMode(ENC_RIGHT_B, INPUT);
 
+    // Ultrasonic sensor pins
+    pinMode(LEFT_TRIG, OUTPUT);
+    pinMode(LEFT_ECHO, INPUT);
+    pinMode(RIGHT_TRIG, OUTPUT);
+    pinMode(RIGHT_ECHO, INPUT);
+    pinMode(FRONT_TRIG, OUTPUT);
+    pinMode(FRONT_ECHO, INPUT);
+
     // Encoder interrupts
     attachInterrupt(digitalPinToInterrupt(ENC_LEFT_A), leftEncoderISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(ENC_RIGHT_A), rightEncoderISR, CHANGE);
@@ -229,4 +237,50 @@ void turnRight90PID() {
     }
     printEncoderStatus();
     motorStop();
+}
+
+// ============================================================================
+// ULTRASONIC SENSOR FUNCTIONS
+// ============================================================================
+
+int readDistanceLeft() {
+    digitalWrite(LEFT_TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(LEFT_TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(LEFT_TRIG, LOW);
+    long duration = pulseIn(LEFT_ECHO, HIGH);
+    return duration * 0.034 / 2;
+}
+
+int readDistanceRight() {
+    digitalWrite(RIGHT_TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(RIGHT_TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(RIGHT_TRIG, LOW);
+    long duration = pulseIn(RIGHT_ECHO, HIGH);
+    return duration * 0.034 / 2;
+}
+
+int readDistanceFront() {
+    digitalWrite(FRONT_TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(FRONT_TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(FRONT_TRIG, LOW);
+    long duration = pulseIn(FRONT_ECHO, HIGH);
+    return duration * 0.034 / 2;
+}
+
+bool hasWallLeft() {
+    return readDistanceLeft() < WALL_THRESHOLD;
+}
+
+bool hasWallRight() {
+    return readDistanceRight() < WALL_THRESHOLD;
+}
+
+bool hasWallFront() {
+    return readDistanceFront() < WALL_THRESHOLD;
 }

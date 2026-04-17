@@ -14,6 +14,16 @@
 #define ENC_RIGHT_A 3
 #define ENC_RIGHT_B A3
 
+// ULTRASONIC SENSORS (HC-SR04)
+#define LEFT_TRIG   7
+#define LEFT_ECHO   8
+#define RIGHT_TRIG  11
+#define RIGHT_ECHO  12
+#define FRONT_TRIG  13
+#define FRONT_ECHO  A0
+
+#define WALL_THRESHOLD 10  // cm - wall detected if distance < this
+
 #define MAX_SPEED 255
 #define MIN_SPEED 50
 
@@ -67,10 +77,13 @@ void printParams();
 // Movement functions
 void moveOneCell(int targetDirection);
 
-// Sensor functions (to be implemented)
+// Sensor functions
 bool hasWallLeft();
 bool hasWallRight();
 bool hasWallFront();
+int readDistanceLeft();
+int readDistanceRight();
+int readDistanceFront();
 
 // Floodfill functions (to be implemented)
 int getCurrentDirection();
