@@ -14,7 +14,7 @@
 #define ENC_RIGHT_A 3
 #define ENC_RIGHT_B A3
 
-// ULTRASONIC SENSORS (HC-SR04)
+// ULTRASONIC SENSORS 
 #define LEFT_TRIG   7
 #define LEFT_ECHO   8
 #define RIGHT_TRIG  11
@@ -22,7 +22,7 @@
 #define FRONT_TRIG  13
 #define FRONT_ECHO  A0
 
-#define WALL_THRESHOLD 10  // cm - wall detected if distance < this
+#define WALL_THRESHOLD 10  // cm 
 
 #define MAX_SPEED 255
 #define MIN_SPEED 50
@@ -38,11 +38,6 @@ extern float KP_TURN;
 extern float KD_TURN;
 extern float KI_TURN;
 
-// PID WALL CENTERING GAINS
-extern float KP_CENTER;
-extern float KD_CENTER;
-extern float KI_CENTER;
-
 // FUNCTIONS
 void robotInit();
 void resetEncoders();
@@ -52,7 +47,6 @@ void motorRight(int speed);
 void motorStop();
 
 void driveStraight(int baseSpeed);
-void driveCentered(int baseSpeed);
 void turnLeft(int speed);
 void turnRight(int speed);
 

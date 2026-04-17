@@ -117,43 +117,8 @@ void driveStraight(int baseSpeed) {
 // PID WALL CENTERING
 // ============================================================================
 
-float KP_CENTER = 2.0;
-float KD_CENTER = 1.0;
-float KI_CENTER = 0.5;
 
-int lastCenterError = 0;
-float centerIntegral = 0;
 
-void driveCentered(int baseSpeed) {
-    int leftDist = readDistanceLeft();
-    int rightDist = readDistanceRight();
-    
-    int error = 0;
-    
-    if (leftDist < WALL_THRESHOLD * 3 && rightDist < WALL_THRESHOLD * 3) {
-        error = leftDist - rightDist;
-    } else if (leftDist < WALL_THRESHOLD * 3) {
-        error = leftDist - 5;
-    } else if (rightDist < WALL_THRESHOLD * 3) {
-        error = 5 - rightDist;
-    }
-    
-    centerIntegral += error;
-    int derivative = error - lastCenterError;
-    lastCenterError = error;
-    
-    int correction = (KP_CENTER * error) + (KI_CENTER * centerIntegral) + (KD_CENTER * derivative);
-    correction = constrain(correction, -30, 30);
-    
-    int leftSpeed = baseSpeed + correction;
-    int rightSpeed = baseSpeed - correction;
-    
-    leftSpeed = constrain(leftSpeed, MIN_SPEED, MAX_SPEED);
-    rightSpeed = constrain(rightSpeed, MIN_SPEED, MAX_SPEED);
-    
-    motorLeft(leftSpeed);
-    motorRight(rightSpeed);
-}
 
 // ============================================================================
 // ENCODER INTERRUPTS
